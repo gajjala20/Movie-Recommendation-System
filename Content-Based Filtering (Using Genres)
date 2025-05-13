@@ -1,0 +1,26 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
+
+# Replace '|' with space in genres
+movies['genres'] = movies['genres'].str.replace('|', ' ')
+
+# TF-IDF Vectorizer
+tfidf = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf.fit_transform(movies['genres'])
+
+# Compute cosine similarity
+cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+# Movie index mapping
+indices = pd.Series(movies.index, index=movies['title']).drop_duplicates()
+
+# Recommendation function
+def content_recommendations(title, num_recommendations=5):
+    idx = indices[title]
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)[1:num_recommendations+1]
+    movie_indices = [i[0] for i in sim_scores]
+    return movies['title'].iloc[movie_indices]
+
+# Example
+print(content_recommendations('Toy Story (1995)'))
