@@ -1,0 +1,8 @@
+import pandas as pd
+
+# Load movie and rating data
+movies = pd.read_csv('movies.csv')  # columns: movieId, title, genres
+ratings = pd.read_csv('ratings.csv')  # columns: userId, movieId, rating, timestamp
+
+# Merge movies and ratings
+df = pd.merge(ratings, movies, on='movieId')
